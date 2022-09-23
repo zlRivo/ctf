@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 typedef struct tagOBJ{
         struct tagOBJ* fd;
         struct tagOBJ* bk;
