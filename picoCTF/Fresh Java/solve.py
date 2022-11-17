@@ -35,3 +35,5 @@ password[1] = 'i'
 password[0] = 'p'
 
 print(''.join(password))
+
+# My stupid ass
