@@ -11,6 +11,7 @@ int is_valid_hex(unsigned char c) {
     return 1;
 }
 
+// Idk what this does
 int f(char* a, char* b) {
     void* v = a - 1;
     char* cnt = b;
