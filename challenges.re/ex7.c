@@ -8,7 +8,7 @@ void lower(char* str) {
     
     while (1) {
         if (c - 'A' < 25) {
-            c += 0x20 // Capitalize
+            c += 0x20
             *ptr = c;
         }
 
