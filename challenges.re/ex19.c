@@ -50,11 +50,11 @@ void* f2(char* a, int b, char* c, int d) {
             }
             k = j;
         }
-        i = ptr[k];
+        i = ptr[i];
     }
 
     free(ptr);
-    return rbx;
+    return ret;
 }
 
 int main(int argc, char** argv) {
