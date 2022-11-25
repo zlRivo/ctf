@@ -1,37 +1,56 @@
 #include <stdio.h>
 
-// Im losing my mind
-void f2(int* a, int b, int c, int* d) {
+// a: Pointer to array
+// b: Index in the array
+int f2(int *a, int b, int c) {
+
     int i = 0;
-    int* addr = &a[b];
+    int *addr = &a[b];
     int val = c + 1;
     int val2 = *addr;
-    
+
     while (1) {
+
         int xor = addr[i + 1];
         b++;
-        if (xor > val2 || xor > c) {
+
+        if (xor <= val2 && xor <= c) {
+            i++;
+            continue;
+        }
+
+        int *ptr = &a[val - 1];
+        int *ptr_save = ptr;
+
+        do {
+            ptr--;
+            val--;
+        } while (ptr[1] > val2);
+
+        if (b >= val) {
+            *addr = *ptr_save = (ptr[1] ^ *addr) ^ *ptr_save;
             break;
         }
+
+        addr[i + 1] = *ptr_save = (ptr[1] ^ xor) ^ *ptr_save;
         i++;
     }
 
-    int* ptr = &a[val - 1];
+    return val;
+}
 
-    int* val3_save = ptr;
-    ptr--;
-    val--;
-    if (val3_save[1] < val2) {
-        continue;
-    } else if (b >= val) {
-        break;
+void f1(int* a, int b, int c) {
+
+    while (b >= c) {
+
+        int ret = f2(a, b, c);
+
+        b = ret + 1;
+        f1(a, b, ret - 1);
     }
-    
-    int val4 = val3_save[1] ^ xor;
-    addr[i + 1] = val4;
 
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     return 0;
 }
