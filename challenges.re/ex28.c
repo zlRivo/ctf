@@ -17,21 +17,25 @@ void* my_memdup(size_t size, void* addr) {
     return memcpy(malloc(size), addr, size);
 } 
 
-int f_main(void* a, size_t b) {
-    size_t size = b * 4;
+// This function returns the median in an array
+int f_main(void* arr, size_t count) {
+    size_t size = count * 4;
     
-    int* ptr = memcpy(malloc(size), a, size);
-    qsort(ptr, b, 4, compare);
+    // Duplicates the integers array into a malloc'ed area
+    // and sorts the array
+    int* ptr = memcpy(malloc(size), arr, size);
+    qsort(ptr, count, 4, compare);
 
-    b = b >> 1;
+    // Divide by two
+    count = count >> 1;
 
-    if (b & 1 == 0) { // b % 2 == 0
-        int val = ptr[b] + ptr[b - 1];
+    if (count & 1 == 0) { // b % 2 == 0
+        int val = ptr[count] + ptr[count - 1];
         
-        return ((val >> 31) + val) >> 1;
+        return (signed long long)((val >> 31) + val) >> 1; // Cast to ensure arithmetic shift
     }
 
-    return ptr[b];
+    return ptr[count];
 }
 
 int main(int argc, char** argv) {
